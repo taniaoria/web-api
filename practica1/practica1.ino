@@ -5,12 +5,10 @@
 #include <WiFiClient.h>
 
 const char* ssid     = "INFINITUM697B_2.4"; 
-const char* password = "tacosalpastor"; 
-String server = "http://192.168.1.68:3000/users";
+const char* password = "***********"; 
+String server = "http://localhost:3000/users";
 
 String estado = "0";
-
-
 
 const int s1 = D0;
 const int s2 = D1;
@@ -21,6 +19,7 @@ int valorS2 = LOW;
 
 void setup() {
   Serial.begin(9600);
+
 
   pinMode(s1, INPUT);
   pinMode(s2, INPUT);
@@ -40,38 +39,41 @@ void setup() {
 }
 
 void loop() {
- post(estado);
+  
+estados();
+    
+}
+
+void estados(){
   valorS1 = digitalRead(s1);
   valorS2 = digitalRead(s2);
 
-    if(valorS1 == HIGH && valorS2 == LOW){
+    if(valorS1 == HIGH && estado!="2"){
        estado = "1";
-       
-        
-
+     post(estado);
+  
     }else
-    if(valorS2 == HIGH && valorS1 == LOW){
+    if( valorS2 == HIGH && estado!="1"){
        estado = "2";
-         
-
-        
-    }else
-    if(valorS1 == LOW && valorS2 == LOW){
+       
+  
+    }else{
        estado = "0";
-       
-
-       
+      post(estado);
     }
-    delayMicroseconds(1000);
-}
+    
+    delay(2000);
+  }
 
 
 void post(String estado) {
-   HTTPClient http;
+  HTTPClient http;
   String json;
   StaticJsonBuffer<200> jsonBuffer;
   JsonObject& root = jsonBuffer.createObject();
   root["estado"] = estado;
+
+
   root.printTo(json);
   Serial.println(""); // salto de linea para http.writeToStream(&Serial);
   http.begin(server);
